@@ -30,6 +30,7 @@
         fetch('https://streamed.su/api/matches/all-today')
             .then(response => response.json())
             .then(data => {
+                console.log(data); // Log the entire data object to inspect its structure
                 const matchesList = document.getElementById('matches-list');
                 data.forEach(match => {
                     const row = document.createElement('tr');
