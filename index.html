@@ -23,11 +23,11 @@
     <iframe id="stream" src="" title="Live Stream"></iframe>
 
     <script>
-        fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://vivosoccer.xyz/spo/schedule/'))
-            .then(response => response.json())
-            .then(data => {
+        fetch('https://thingproxy.freeboard.io/fetch/' + encodeURIComponent('https://vivosoccer.xyz/spo/schedule/'))
+            .then(response => response.text())
+            .then(html => {
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
+                const doc = parser.parseFromString(html, 'text/html');
                 const events = doc.querySelectorAll('.event-class');  // Adjust selector based on actual structure
 
                 events.forEach(event => {
