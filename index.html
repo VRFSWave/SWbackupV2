@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Today's Matches</title>
+    <title>Today's Match Streams</title>
     <style>
         body { font-family: Arial, sans-serif; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -12,37 +12,53 @@
     </style>
 </head>
 <body>
-    <h1>Today's Matches</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Game Name</th>
-                <th>Link</th>
-            </tr>
-        </thead>
-        <tbody id="matches-list">
-            <!-- Matches will be listed here -->
-        </tbody>
-    </table>
+    <h1>Select a Game Stream</h1>
+    <div id="game-details"></div>
+
+    <div id="source-options"></div>
+
+    <div id="stream-options"></div>
+
+    <div id="stream-container"></div>
 
     <script>
+        // Step 1: Fetch game details
         fetch('https://streamed.su/api/matches/all-today')
             .then(response => response.json())
             .then(data => {
-                console.log(data); // Log the entire data object to inspect its structure
-                const matchesList = document.getElementById('matches-list');
-                data.forEach(match => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${match.time}</td>
-                        <td>${match.game_name}</td>
-                        <td><a href="${match.link}" target="_blank">Watch</a></td>
-                    `;
-                    matchesList.appendChild(row);
+                const game = data[0]; // Assuming we're taking the first match for this example
+                const gameTitle = game.title;
+                const sources = game.sources;
+                
+                document.getElementById('game-details').innerHTML = `<h2>${gameTitle}</h2>`;
+
+                let sourceOptionsHTML = "<p>Select a source:</p>";
+                sources.forEach((source, index) => {
+                    sourceOptionsHTML += `<button onclick="fetchStreams('${source}', ${index})">${source}</button>`;
                 });
+                document.getElementById('source-options').innerHTML = sourceOptionsHTML;
             })
-            .catch(error => console.error('Error fetching the data:', error));
+            .catch(error => console.error('Error fetching game details:', error));
+
+        // Step 2: Fetch stream options based on selected source
+        function fetchStreams(source, sourceIndex) {
+            fetch(`https://streamed.su/api/stream/${source}/${sourceIndex}`)
+                .then(response => response.json())
+                .then(streams => {
+                    let streamOptionsHTML = "<p>Select a stream:</p>";
+                    streams.forEach((stream, index) => {
+                        streamOptionsHTML += `<button onclick="playStream('${stream.embedURL}')">Stream ${index + 1}</button>`;
+                    });
+                    document.getElementById('stream-options').innerHTML = streamOptionsHTML;
+                })
+                .catch(error => console.error('Error fetching streams:', error));
+        }
+
+        // Step 3: Play the chosen stream in an iframe
+        function playStream(embedURL) {
+            const iframeHTML = `<iframe width="640" height="360" src="${embedURL}" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById('stream-container').innerHTML = iframeHTML;
+        }
     </script>
 </body>
 </html>
