@@ -3,51 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Sports Schedule</title>
+    <title>Today's Matches</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        .event-list { list-style-type: none; padding: 0; }
-        .event-item { margin-bottom: 20px; }
-        iframe { width: 100%; height: 500px; border: none; margin-top: 20px; }
-        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
     </style>
 </head>
 <body>
-
-    <h1>Live Sports Events</h1>
-    <ul id="eventList" class="event-list">
-        <!-- Events will be injected here -->
-    </ul>
-
-    <iframe id="stream" src="" title="Live Stream"></iframe>
+    <h1>Today's Matches</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Game Name</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody id="matches-list">
+            <!-- Matches will be listed here -->
+        </tbody>
+    </table>
 
     <script>
-        fetch('https://thingproxy.freeboard.io/fetch/' + encodeURIComponent('https://vivosoccer.xyz/spo/schedule/'))
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const events = doc.querySelectorAll('.event-class');  // Adjust selector based on actual structure
-
-                events.forEach(event => {
-                    const eventName = event.querySelector('.event-name').textContent;
-                    const embedLink = event.querySelector('.embed-link').href;
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('event-item');
-                    listItem.innerHTML = `
-                        <h3>${eventName}</h3>
-                        <button onclick="watchNow('${embedLink}')">Watch Now</button>
+        fetch('https://streamed.su/api/matches/all-today')
+            .then(response => response.json())
+            .then(data => {
+                const matchesList = document.getElementById('matches-list');
+                data.forEach(match => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${match.time}</td>
+                        <td>${match.game_name}</td>
+                        <td><a href="${match.link}" target="_blank">Watch</a></td>
                     `;
-                    document.getElementById('eventList').appendChild(listItem);
+                    matchesList.appendChild(row);
                 });
             })
-            .catch(err => console.log('Error loading events:', err));
-
-        function watchNow(url) {
-            document.getElementById('stream').src = url;
-        }
+            .catch(error => console.error('Error fetching the data:', error));
     </script>
-
 </body>
 </html>
