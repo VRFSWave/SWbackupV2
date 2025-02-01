@@ -25,8 +25,8 @@
     <div id="stream-container"></div>
 
     <script>
-        // Step 1: Fetch game details from the API
-        fetch('https://streamed.su/api/matches/all-today')
+        // Step 1: Fetch game details from the API (using proxy)
+        fetch('https://cors-anywhere.herokuapp.com/https://streamed.su/api/matches/all-today')
             .then(response => response.json())
             .then(data => {
                 const game = data[0]; // Assuming the first match for testing
@@ -43,9 +43,9 @@
             })
             .catch(error => console.error('Error fetching game details:', error));
 
-        // Step 2: Fetch stream options based on selected source
+        // Step 2: Fetch stream options based on selected source (using proxy)
         function fetchStreams(source, sourceIndex) {
-            fetch(`https://streamed.su/api/stream/${source}/${sourceIndex}`)
+            fetch(`https://cors-anywhere.herokuapp.com/https://streamed.su/api/stream/${source}/${sourceIndex}`)
                 .then(response => response.json())
                 .then(streams => {
                     let streamOptionsHTML = "<p>Select a stream:</p>";
